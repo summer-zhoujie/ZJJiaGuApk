@@ -47,6 +47,7 @@ public class JiaguShell {
     private static final String ENV_KEYTOOL_ALIAS = "decode";
     private static final String ENV_KEYTOOL_PWD = "zhoujie";
     private static final String ENV_SOURCE_PACKAGENAME = "com.example.playground";
+    private static final String ENV_OUTPUT_DIR = "/Users/summer/Documents/zhoujie/decodeOutput";
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void main(String[] args) throws Exception {
@@ -80,18 +81,14 @@ public class JiaguShell {
         printIn("ENV", "source_apk_package_name=" + ENV_SOURCE_PACKAGENAME);
         printIn("ENV", "source.apk=" + args[0]);
         printIn("ENV", "jiagu.dex=" + args[1]);
+        printIn("ENV", "output dir=" + ENV_OUTPUT_DIR);
         printIn("=========================================================================\n\n");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         // 把源程序的dex加密之后放在壳程序的dex之下
 
         // create apk unzip temp dir
-        File sourceApkTmpDir = new File("SourceApkTmpDir");
-        if (sourceApkTmpDir.exists()) {
-            execShell("rm -rf " + sourceApkTmpDir.getAbsolutePath());
-        }
-        printIn("delete and create new dexFileAfterJiagu: " + sourceApkTmpDir.getAbsolutePath());
-        sourceApkTmpDir.mkdir();
+        File sourceApkTmpDir = createFileDirDelIfExits("SourceApkTmpDir");
 
         File sourceApkFile = new File(args[0]);
         File jiaguApkFile = new File(args[1]);
@@ -146,11 +143,7 @@ public class JiaguShell {
         fixCheckSumHeader(newdex);
 
         // 写入新的dex文件
-        File dexFileAfterJiagu = new File("afterJiagu.dex");
-        if (dexFileAfterJiagu.exists()) {
-            execShell("rm -rf " + dexFileAfterJiagu.getAbsolutePath());
-        }
-        dexFileAfterJiagu.createNewFile();
+        File dexFileAfterJiagu = createFileDelIfExits("afterJiagu.dex");
         FileOutputStream fileOutputStream = new FileOutputStream(dexFileAfterJiagu);
         fileOutputStream.write(newdex);
         fileOutputStream.flush();
@@ -240,7 +233,7 @@ public class JiaguShell {
         }
 
         // zip 压缩, 压缩成未签名的加固包
-        File sourceJiaguUnsignedApk = new File("sourceJiaguUnsigned.apk");
+        File sourceJiaguUnsignedApk = new File(ENV_OUTPUT_DIR,"sourceJiaguUnsigned.apk");
         if (sourceJiaguUnsignedApk.exists()) {
             execShell("rm -rf " + sourceJiaguUnsignedApk.getAbsolutePath());
         }
@@ -252,7 +245,7 @@ public class JiaguShell {
         }
 
         // 签名
-        File sourceJiaguSignedApk = new File("sourceJiaguSigned.apk");
+        File sourceJiaguSignedApk = new File(ENV_OUTPUT_DIR,"sourceJiaguSigned.apk");
         if (sourceJiaguSignedApk.exists()) {
             execShell("rm -rf " + sourceJiaguSignedApk.getAbsolutePath());
         }
@@ -337,7 +330,11 @@ public class JiaguShell {
     }
 
     private static File createFileDirDelIfExits(String filePath) throws IOException, InterruptedException {
-        File file = new File(filePath);
+        return createFileDirDelIfExits(filePath, ENV_OUTPUT_DIR);
+    }
+
+    private static File createFileDirDelIfExits(String filePath, String parent) throws IOException, InterruptedException {
+        File file = new File(parent, filePath);
         if (file.exists()) {
             execShell("rm -rf " + file.getAbsolutePath());
         }
@@ -346,7 +343,11 @@ public class JiaguShell {
     }
 
     private static File createFileDelIfExits(String filePath) throws IOException, InterruptedException {
-        File file = new File(filePath);
+        return createFileDelIfExits(filePath, ENV_OUTPUT_DIR);
+    }
+
+    private static File createFileDelIfExits(String filePath, String parent) throws IOException, InterruptedException {
+        File file = new File(parent, filePath);
         if (file.exists()) {
             execShell("rm -rf " + file.getAbsolutePath());
         }
