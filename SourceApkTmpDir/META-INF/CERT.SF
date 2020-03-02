@@ -1,6 +1,6 @@
 Signature-Version: 1.0
 Created-By: 1.0 (Android)
-SHA1-Digest-Manifest: C8u7vBQN3ejYpTQX+0G16H8ov8M=
+SHA1-Digest-Manifest: UfjoG6j4Sl7bYXJomt3cF1HnWic=
 
 Name: AndroidManifest.xml
 SHA1-Digest: RSjxiJ+KG9X7WvtA6KVL1FJRmo0=
@@ -67,7 +67,7 @@ Name: META-INF/androidx.viewpager_viewpager.version
 SHA1-Digest: Z6PEVwMu6dlOivFDm82mN1PA+/g=
 
 Name: classes.dex
-SHA1-Digest: dIPKrYIfkUmQYw15/b4scW/mYNY=
+SHA1-Digest: FXFofk2Kz2fQZL8vj2i8G5o+4x8=
 
 Name: res/anim/abc_fade_in.xml
 SHA1-Digest: XXaSktKiWqcfhbVCAylwxGU9L2s=

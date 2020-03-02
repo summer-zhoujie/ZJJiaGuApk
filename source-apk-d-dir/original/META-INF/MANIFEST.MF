@@ -67,7 +67,7 @@ Name: META-INF/androidx.viewpager_viewpager.version
 SHA1-Digest: xTi2bHEQyjoCjM/kItDx+iAKmTU=
 
 Name: classes.dex
-SHA1-Digest: tczl96UVbKY9blh9Br+nRc3uRtU=
+SHA1-Digest: ih6PQZlzWbkanTmYUpr34aeQX/E=
 
 Name: res/anim/abc_fade_in.xml
 SHA1-Digest: L0IgyYapku8uZtPqOfviagHTIEk=

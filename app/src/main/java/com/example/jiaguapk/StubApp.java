@@ -5,8 +5,11 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.ArrayMap;
 import android.util.Log;
+
+import com.zj.tools.mylibrary.ZjLog;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -17,8 +20,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
@@ -30,12 +35,14 @@ public class StubApp extends Application {
 
     @Override
     protected void attachBaseContext(Context base) {
+        ZjLog.enable = true;
         super.attachBaseContext(base);
 
         try {
 
             byte[] jiaguDexArray = readDexFileFromApk();
             File sDexFile = decodeSourceDexAndWrite2Disk(jiaguDexArray);
+            final byte[] sDexBytes = decodeSourceDex(jiaguDexArray);
 
             Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
             Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null);
@@ -44,23 +51,22 @@ public class StubApp extends Application {
             WeakReference wr;
             ArrayMap mPackages = (ArrayMap) mPackagesField.get(activityThread);
             wr = (WeakReference) mPackages.get(getPackageName());
-
+            ZjLog.d("0");
 
             Class<?> loadedApkClass = Class.forName("android.app.LoadedApk");
             Field mClassLoader = loadedApkClass.getDeclaredField("mClassLoader");
             mClassLoader.setAccessible(true);
-            ClassLoader o = (ClassLoader) mClassLoader.get(wr.get());
+            ClassLoader oldClassLoader = (ClassLoader) mClassLoader.get(wr.get());
 
-            // 反射替换掉当前的dexLoader, 来加载源dex
             File optimizedDirectoryFile = getDir("optimizedDirectory", MODE_PRIVATE);
             final ApplicationInfo applicationInfo = getApplicationInfo();
-            DexClassLoader dexClassLoader = new DexClassLoader(sDexFile.getAbsolutePath(), optimizedDirectoryFile.getAbsolutePath(), applicationInfo.nativeLibraryDir, o);
+            DexClassLoader dexClassLoader = new DexClassLoader(sDexFile.getAbsolutePath(), optimizedDirectoryFile.getAbsolutePath(), applicationInfo.nativeLibraryDir, oldClassLoader);
             mClassLoader.set(wr.get(), dexClassLoader);
 
         } catch (Exception e) {
+            ZjLog.d("error +++++");
             printException(e);
         }
-
 
     }
 
@@ -158,6 +164,20 @@ public class StubApp extends Application {
         } catch (Exception e) {
             printException(e);
         }
+    }
+
+    private byte[] decodeSourceDex(byte[] jiaguDex) throws IOException {
+        byte[] sourceDexLen = new byte[4];
+        System.arraycopy(jiaguDex, jiaguDex.length - 4, sourceDexLen, 0, 4);
+
+        DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(sourceDexLen));
+        int sDexLen = dataInputStream.readInt();
+        Log.d("=summerzhou=", "源dex长度= " + sDexLen);
+
+        byte[] sourceDex = new byte[sDexLen];
+        System.arraycopy(jiaguDex, jiaguDex.length - 4 - sDexLen, sourceDex, 0, sDexLen);
+        byte[] decode = decode(sourceDex);
+        return decode;
     }
 
     private File decodeSourceDexAndWrite2Disk(byte[] jiaguDex) throws IOException {

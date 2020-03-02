@@ -52,7 +52,7 @@ public class JiaguShell {
     public static void main(String[] args) throws Exception {
         doTest();
 
-        String[] args1 = {"/Users/summer/Downloads/decode/source.apk", "/Users/summer/StudioProjects/JiaGuApk/app/build/outputs/apk/release/app-release-unsigned.apk"};
+        String[] args1 = {"/Users/summer/Documents/zhoujie/decode/testPro/app-release.apk", "/Users/summer/StudioProjects/JiaGuApk/app/build/outputs/apk/release/app-release-unsigned.apk"};
         doRealLogic(args1);
     }
 
@@ -485,7 +485,7 @@ public class JiaguShell {
 
                 try {
                     while ((line = in.readLine()) != null) {
-                        System.out.println("output: " + line);
+//                        System.out.println("output: " + line);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -541,7 +541,7 @@ public class JiaguShell {
 
                 try {
                     while ((line = in.readLine()) != null) {
-                        System.out.println("output: " + line);
+//                        System.out.println("output: " + line);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

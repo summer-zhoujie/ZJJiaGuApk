@@ -1,5 +1,5 @@
 !!brut.androlib.meta.MetaInfo
-apkFileName: source.apk
+apkFileName: app-release.apk
 compressionType: false
 doNotCompress:
 - resources.arsc
